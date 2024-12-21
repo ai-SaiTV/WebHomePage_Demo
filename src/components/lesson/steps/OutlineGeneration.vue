@@ -7,7 +7,7 @@ const isGenerating = ref(false);
 const outline = ref('');
 
 const generateOutline = () => {
-  isGenerating = true;
+  isGenerating.value = true;
   // 模拟AI生成过程
   setTimeout(() => {
     outline.value = `1. 课程导入 (5分钟)
@@ -28,7 +28,7 @@ const generateOutline = () => {
   - 知识点回顾
   - 拓展思考
   - 布置作业`;
-    isGenerating = false;
+    isGenerating.value = false;
   }, 1500);
 };
 </script>
