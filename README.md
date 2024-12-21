@@ -1,5 +1,26 @@
 # Vue 3 + TypeScript + Vite
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 📖 介绍
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+一个AI教学助手的小demo
+
+## 💿 运行
+> [!note]
+>
+> 请确保 已经安装了npm,Node.js和Vue.js
+<details >
+<summary>若未安装，请查看</summary>
+
+ - 安装npm和Node.js请跳转至官方文档([在wsl2中设置Node.js](https://learn.microsoft.com/zh-cn/windows/dev-environment/javascript/nodejs-on-wsl))
+ - 安装Vue.js请跳转至官方文档([在wsl2中设置Vue.js](https://learn.microsoft.com/zh-cn/windows/dev-environment/javascript/vue-on-wsl))
+</details>
+
+<details>
+<summary>安装完成后，请查看</summary>
+在Demo项目的根目录下打开命令行, 输入以下指令即可执行
+
+    npm install
+    npm run dev
+
+</details>
+
