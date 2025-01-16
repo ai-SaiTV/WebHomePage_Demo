@@ -26,10 +26,11 @@
 <br>
 <br>
 
-> [!note]
+> [!warning]
 >
 > ???我是`windows`环境，你给我干哪来了？😿😿😿
 
+#### windows 环境运行指南👇
 [nodejs官网下载](https://nodejs.org)并且安装`node.js` 15版本以上。
 1. 在**项目根目录**终端运行
 ``` bash
