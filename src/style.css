@@ -37,7 +37,6 @@ body {
 }
 
 .main-content {
-  margin-left: 250px;
   padding: 2rem;
 }
 
@@ -60,4 +59,22 @@ body {
 .btn-secondary {
   background-color: #2196F3;
   color: white;
+  
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+.btn button {
+  padding: 1rem;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }

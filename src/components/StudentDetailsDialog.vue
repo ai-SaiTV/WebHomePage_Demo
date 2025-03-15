@@ -37,6 +37,7 @@
 
       <!-- 个人分析 -->
       <el-row :gutter="20" class="mt-4">
+        <h2>学生分析</h2>
         <el-col :span="12">
           <el-card>
             <template #header>

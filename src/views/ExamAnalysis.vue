@@ -1,7 +1,8 @@
 <template>
   <div class="analysis-container">
     <div class="header">
-      <button @click="router.push('/Dashboard')" class="btn btn-secondary">返回</button>
+       <p2><button @click="generateStudentAnalysis(selectedStudent)" class="btn btn-primary">开始分析</button></p2>
+       <p1><button @click="router.push('/Dashboard')" class="btn btn-secondary">返回</button></p1>
     </div>
     <StudentDetailsDialog
       :show="showStudentDetails"
@@ -10,6 +11,7 @@
       :loading="isAnalyzing"
       @update:show="showStudentDetails = false"
     />
+    
   </div>
 </template>
 
@@ -33,6 +35,7 @@ interface Question {
   maxScore: number;
   correctRate: number;
 }
+
 
 const showStudentDetails = ref(false);
 const studentAnalysis = ref({
@@ -118,7 +121,27 @@ const viewStudentDetails = (student: Student) => {
 <style scoped>
 .header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 1rem;
+}
+.p1, .p2 {
+  margin: 0;
+}
+.p1 {
+  align-self: flex-start;
+}
+.p2 {
+  align-self: flex-start;
+}
+.analysis-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  }
+.mt-4 {
+  margin-top: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 </style>
