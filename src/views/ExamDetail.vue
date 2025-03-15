@@ -41,6 +41,13 @@ const examRecords = ref<ExamRecord[]>([
     subject: '英语',
     score: 88,
     details: 'https://n.sinaimg.cn/sinakd20109/207/w1080h1527/20210526/6191-kqpyffz7008096.jpg'
+  },
+  {
+    id: 3,
+    date: '2024-03-15',
+    subject: '数学',
+    score: 88,
+    details: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.pIKc2obM9KHrBVc1Ml2YHQHaHJ?rs=1&pid=ImgDetMain'
   }
 ]);
 

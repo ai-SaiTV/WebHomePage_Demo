@@ -143,14 +143,14 @@ onMounted(() => {
       tooltip: { trigger: "axis" },
       xAxis: {
         type: "category",
-        data: ["2024-01", "2024-02", "2024-03"],
+        data: props.student.scores.map((_, index) => (index + 1).toString()),
       },
-      yAxis: { type: "value", min: 60 },
+      yAxis: { type: "value", min: 0, max: 10 },
       series: [
         {
           name: "成绩",
           type: "line",
-          data: props.student.scores.slice(0, 3),
+          data: props.student.scores.slice(0, 8),
           smooth: true,
           itemStyle: { color: "#1890ff" },
           areaStyle: {

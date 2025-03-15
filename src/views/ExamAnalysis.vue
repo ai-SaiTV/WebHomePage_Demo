@@ -50,7 +50,7 @@ const scores = [5, 10, 2, 5, 6, 4, 7, 8];
 const total = scores.reduce((sum, score) => sum + score, 0);
 const selectedStudent = ref<Student>({
   id: "230213",
-  name: "阿斯弗",
+  name: "李华",
   scores,
   total,
   average: total / scores.length,
@@ -110,12 +110,12 @@ const generateStudentAnalysis = async (student: Student) => {
   isAnalyzing.value = false;
 };
 
-// 查看学生详情
-const viewStudentDetails = (student: Student) => {
-  selectedStudent.value = student;
-  showStudentDetails.value = true;
-  generateStudentAnalysis(student);
-};
+// // 查看学生详情
+// const viewStudentDetails = (student: Student) => {
+//   selectedStudent.value = student;
+//   showStudentDetails.value = true;
+//   generateStudentAnalysis(student);
+// };
 </script>
 
 <style scoped>
