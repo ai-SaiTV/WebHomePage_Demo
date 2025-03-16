@@ -12,11 +12,11 @@
               <div class="student-stats">
                 <div class="stat-item">
                   <div class="label">本次得分</div>
-                  <div class="value">{{ student?.total || 0 }}</div>
+                  <div class="value">{{ student?.total || 0 }}/{{ scoretotal }}</div>
                 </div>
                 <div class="stat-item">
                   <div class="label">平均分</div>
-                  <div class="value">{{ student?.average.toFixed(2) || 0 }}</div>
+                  <div class="value">{{ student?.average.toFixed(2) || 0 }} </div>
                 </div>
                 <div class="stat-item">
                   <div class="label">排名</div>
@@ -125,6 +125,7 @@ const emits = defineEmits(['update:show']);
 
 const internalShow = ref(props.show);
 
+const scoretotal = 8 * 10;
 watch(() => props.show, (newVal) => {
   internalShow.value = newVal;
 });
