@@ -1,7 +1,7 @@
 <template>
   <div class="exam-detail">
     <div class="header">
-      <button @click="router.push('/Studylog')" class="btn btn-secondary">返回</button>
+      <button @click="router.push('/Exercise')" class="btn btn-secondary">返回</button>
     </div>
     <div class="detail-container white-card">
       <div class="detail-container white-card">

@@ -30,7 +30,7 @@ const password = ref('');
 const handleLogin = () => {
   if (username.value && password.value) {
     authStore.login(username.value);
-    router.push('/dashboard');
+    router.push('/Exercise');
   }
 };
 

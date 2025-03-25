@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/Login.vue';
-import Dashboard from '../views/Dashboard.vue';
-import Studylog from '../views/Studylog.vue';
-import ExamAnalysis from '../views/ExamAnalysis.vue';
 import ExamDetail from '../views/ExamDetail.vue';
-
+import AppLayout from '../components/AppLayout.vue'
+import Performance from '../views/Performance.vue';
+import Exercise from '../views/Exercise.vue';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -12,22 +11,25 @@ const router = createRouter({
       path: '/',
       component: Login
     },
-    { 
-      path: '/dashboard', 
-      component: Dashboard 
+    {
+      path: '/',
+      component: AppLayout,
+      children: [
+        { 
+          path: '/Performance', 
+          component: Performance 
+        },
+        { 
+          path: '/Exercise', 
+          component: Exercise 
+        },
+        { 
+          path: '/Exercise/:id', 
+          component: ExamDetail 
+        },
+      ]
     },
-    { 
-      path: '/Studylog', 
-      component: Studylog 
-    },
-    { 
-      path: '/exam-analysis', 
-      component: ExamAnalysis 
-    },
-    { 
-      path: '/exam-detail/:id', 
-      component: ExamDetail 
-    },
+    
   ],
 });
 
