@@ -22,8 +22,8 @@ const handleMenuSelect = (index: string) => {
   <el-container class="layout-container">
     <el-aside :width="isCollapse ? '64px' : '200px'" class="aside">
       <div class="logo">
-        <img src="/vite.svg" alt="Logo" class="logo-img" />
-        <span v-show="!isCollapse">智慧备课平台</span>
+        <img src="/aisai.png" alt="Logo" class="logo-img" />
+        <span v-show="!isCollapse">智慧学习平台</span>
       </div>
       <el-menu
         :collapse="isCollapse"
@@ -57,12 +57,12 @@ const handleMenuSelect = (index: string) => {
           <el-dropdown>
             <span class="user-info">
               <el-avatar size="small" />
-              教师用户
+              学生用户
             </span>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>个人信息</el-dropdown-item>
-                <el-dropdown-item>退出登录</el-dropdown-item>
+                <el-dropdown-item @click = "router.push('/')">退出登录 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
