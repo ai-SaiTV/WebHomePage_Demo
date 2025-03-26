@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 
 interface Exercise {
   id: string
@@ -89,6 +89,7 @@ const currentQuestionIndex = ref(0)
 const userAnswers = ref<Record<number, string>>({})
 const timeRemaining = ref(0)
 const timer = ref<number | null>(null)
+const questionsContainer = ref<HTMLElement | null>(null)
 
 const filteredExercises = computed(() => {
   return exercises.value.filter(exercise => {
@@ -104,9 +105,9 @@ const filteredExercises = computed(() => {
   })
 })
 
-const currentQuestion = computed(() => {
-  return questions.value[currentQuestionIndex.value]
-})
+// const currentQuestion = computed(() => {
+//   return questions.value[currentQuestionIndex.value]
+// })
 
 const progress = computed(() => {
   return {
@@ -168,28 +169,20 @@ const viewReport = (exercise: Exercise) => {
 }
 
 const submitAnswer = () => {
-  if (currentQuestion.value) {
-    userAnswers.value[currentQuestion.value.id] = userAnswers.value[currentQuestion.value.id] || ''
-    
-    if (currentQuestionIndex.value < questions.value.length - 1) {
-      currentQuestionIndex.value++
-    } else {
-      finishExercise()
+  finishExercise()
+}
+
+const scrollToQuestion = (questionId: number) => {
+  if (!questionsContainer.value) return
+  
+  nextTick(() => {
+    const questionElement = document.getElementById(`question-${questionId}`)
+    currentQuestionIndex.value = questions.value.findIndex(question => question.id === questionId)
+    if (questionElement) {
+      questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-  }
+  })
 }
-
-const previousQuestion = () => {
-  if (currentQuestionIndex.value > 0) {
-    currentQuestionIndex.value--
-  }
-}
-
-// const nextQuestion = () => {
-//   if (currentQuestionIndex.value < questions.value.length - 1) {
-//     currentQuestionIndex.value++
-//   }
-// }
 
 const finishExercise = () => {
   if (timer.value) {
@@ -367,7 +360,7 @@ const closeExercise = () => {
     <el-dialog
       v-model="exerciseDialogVisible"
       :title="selectedExercise?.title"
-      width="70%"
+      width="50%"
       :close-on-click-modal="false"
       :before-close="closeExercise"
     >
@@ -385,54 +378,55 @@ const closeExercise = () => {
           </div>
         </div>
 
-        <!-- 题目内容 -->
-        <div class="question-content" v-if="currentQuestion">
-          <h3>第 {{ currentQuestionIndex + 1 }} 题</h3>
-          <p class="question-text">{{ currentQuestion.content }}</p>
+        <!-- 题目内容区域（可滚动） -->
+        <div class="questions-container" ref="questionsContainer">
+          <div v-for="(question, index) in questions" :key="question.id" class="question-content" :id="`question-${question.id}`">
+            <h3>第 {{ index + 1 }} 题</h3>
+            <p class="question-text">{{ question.content }}</p>
 
-          <!-- 选择题 -->
-          <template v-if="currentQuestion.type === 'choice'">
-            <el-radio-group v-model="userAnswers[currentQuestion.id]">
-              <el-radio
-                v-for="option in currentQuestion.options"
-                :key="option"
-                :label="option"
-                class="question-option"
-              >
-                {{ option }}
-              </el-radio>
-            </el-radio-group>
-          </template>
+            <!-- 选择题 -->
+            <template v-if="question.type === 'choice'">
+              <el-radio-group v-model="userAnswers[question.id]" @click="scrollToQuestion(question.id)">
+                <el-radio
+                  v-for="option in question.options"
+                  :key="option"
+                  :label="option"
+                  class="question-option"
+                >
+                  {{ option }}
+                </el-radio>
+              </el-radio-group>
+            </template>
 
-          <!-- 填空题 -->
-          <template v-else-if="currentQuestion.type === 'fill'">
-            <el-input
-              v-model="userAnswers[currentQuestion.id]"
-              placeholder="请输入答案"
-            />
-          </template>
+            <!-- 填空题 -->
+            <template v-else-if="question.type === 'fill'">
+              <el-input
+                v-model="userAnswers[question.id]"
+                placeholder="请输入答案"
+                @focus="scrollToQuestion(question.id)"
+              />
+            </template>
 
-          <!-- 解答题 -->
-          <template v-else-if="currentQuestion.type === 'text'">
-            <el-input
-              v-model="userAnswers[currentQuestion.id]"
-              type="textarea"
-              :rows="4"
-              placeholder="请输入答案"
-            />
-          </template>
+            <!-- 解答题 -->
+            <template v-else-if="question.type === 'text'">
+              <el-input
+                v-model="userAnswers[question.id]"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入答案"
+                @focus="scrollToQuestion(question.id)"
+              />
+            </template>
+          </div>
         </div>
 
-        <!-- 操作按钮 -->
-        <div class="question-actions">
-          <el-button @click="previousQuestion" :disabled="currentQuestionIndex === 0">
-            上一题
-          </el-button>
+        <!-- 提交按钮 -->
+        <div class="submit-button">
           <el-button
             type="primary"
             @click="submitAnswer"
           >
-            {{ currentQuestionIndex === questions.length - 1 ? '提交' : '下一题' }}
+            提交
           </el-button>
         </div>
       </div>
@@ -442,7 +436,7 @@ const closeExercise = () => {
     <el-dialog
       v-model="reportDialogVisible"
       title="练习报告"
-      width="70%"
+      width="50%"
     >
       <div class="report-dialog">
         <!-- 总体得分 -->
@@ -467,39 +461,41 @@ const closeExercise = () => {
           </div>
         </div>
 
-        <!-- 题目分析 -->
+        <!-- 题目分析（可滚动） -->
         <div class="questions-analysis">
           <h3>题目分析</h3>
-          <div
-            v-for="question in questions"
-            :key="question.id"
-            class="question-item"
-          >
-            <div class="question-header">
-              <span class="question-number">第{{ question.id }}题</span>
-              <el-tag
-                :type="userAnswers[question.id] === question.answer ? 'success' : 'danger'"
-                size="small"
-              >
-                {{ userAnswers[question.id] === question.answer ? '正确' : '错误' }}
-              </el-tag>
-            </div>
-            <p class="question-content">{{ question.content }}</p>
-            <div class="answer-section">
-              <p>
-                <span class="label">你的答案：</span>
-                <span :class="{ 'wrong-answer': userAnswers[question.id] !== question.answer }">
-                  {{ userAnswers[question.id] || '未作答' }}
-                </span>
-              </p>
-              <p>
-                <span class="label">正确答案：</span>
-                <span class="correct-answer">{{ question.answer }}</span>
-              </p>
-            </div>
-            <div class="analysis-section">
-              <p class="label">解析：</p>
-              <p class="analysis-content">{{ question.analysis }}</p>
+          <div class="questions-analysis-container">
+            <div
+              v-for="question in questions"
+              :key="question.id"
+              class="question-item"
+            >
+              <div class="question-header">
+                <span class="question-number">第{{ question.id }}题</span>
+                <el-tag
+                  :type="userAnswers[question.id] === question.answer ? 'success' : 'danger'"
+                  size="small"
+                >
+                  {{ userAnswers[question.id] === question.answer ? '正确' : '错误' }}
+                </el-tag>
+              </div>
+              <p class="question-content">{{ question.content }}</p>
+              <div class="answer-section">
+                <p>
+                  <span class="label">你的答案：</span>
+                  <span :class="{ 'wrong-answer': userAnswers[question.id] !== question.answer }">
+                    {{ userAnswers[question.id] || '未作答' }}
+                  </span>
+                </p>
+                <p>
+                  <span class="label">正确答案：</span>
+                  <span class="correct-answer">{{ question.answer }}</span>
+                </p>
+              </div>
+              <div class="analysis-section">
+                <p class="label">解析：</p>
+                <p class="analysis-content">{{ question.analysis }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -568,6 +564,9 @@ const closeExercise = () => {
 
   .exercise-list-card {
     .exercise-list {
+      max-height: 60vh;
+      overflow-y: auto;
+      
       .exercise-item {
         display: flex;
         justify-content: space-between;
@@ -643,31 +642,45 @@ const closeExercise = () => {
       }
     }
 
-    .question-content {
+    .questions-container {
+      max-height: 50vh;
+      overflow-y: auto;
+      padding-right: 10px;
       margin-bottom: 24px;
+      
+      .question-content {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px dashed #e5e7eb;
 
-      h3 {
-        margin: 0 0 16px;
-        color: #1f2937;
-      }
+        &:last-child {
+          margin-bottom: 0;
+          padding-bottom: 0;
+          border-bottom: none;
+        }
 
-      .question-text {
-        font-size: 16px;
-        color: #4b5563;
-        margin-bottom: 20px;
-      }
+        h3 {
+          margin: 0 0 16px;
+          color: #1f2937;
+        }
 
-      .question-option {
-        display: block;
-        margin-bottom: 12px;
+        .question-text {
+          font-size: 16px;
+          color: #4b5563;
+          margin-bottom: 20px;
+        }
+
+        .question-option {
+          display: block;
+          margin-bottom: 12px;
+        }
       }
     }
 
-    .question-actions {
+    .submit-button {
       display: flex;
-      justify-content: space-between;
-      padding-top: 24px;
-      border-top: 1px solid #e5e7eb;
+      justify-content: flex-end;
+      margin-top: 16px;
     }
   }
 
@@ -733,63 +746,73 @@ const closeExercise = () => {
         color: #1f2937;
       }
 
-      .question-item {
-        padding: 20px;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        margin-bottom: 16px;
+      .questions-analysis-container {
+        max-height: 50vh;
+        overflow-y: auto;
+        padding-right: 10px;
 
-        .question-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 12px;
-
-          .question-number {
-            font-weight: 500;
-            color: #1f2937;
-          }
-        }
-
-        .question-content {
-          color: #4b5563;
-          margin-bottom: 16px;
-        }
-
-        .answer-section {
+        .question-item {
+          padding: 20px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
           margin-bottom: 16px;
 
-          p {
-            margin: 8px 0;
+          &:last-child {
+            margin-bottom: 0;
           }
 
-          .label {
-            color: #6b7280;
-            margin-right: 8px;
+          .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+
+            .question-number {
+              font-weight: 500;
+              color: #1f2937;
+            }
           }
 
-          .wrong-answer {
-            color: #dc2626;
+          .question-content {
+            color: #4b5563;
+            margin-bottom: 16px;
           }
 
-          .correct-answer {
-            color: #059669;
+          .answer-section {
+            margin-bottom: 16px;
+
+            p {
+              margin: 8px 0;
+            }
+
+            .label {
+              color: #6b7280;
+              margin-right: 8px;
+            }
+
+            .wrong-answer {
+              color: #dc2626;
+            }
+
+            .correct-answer {
+              color: #059669;
+            }
           }
-        }
 
-        .analysis-section {
-          background: #f8fafc;
-          padding: 12px;
-          border-radius: 4px;
+          .analysis-section {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 4px;
 
-          .label {
-            color: #6b7280;
-            margin-bottom: 4px;
-          }
+            .label {
+              color: #6b7280;
+              margin-bottom: 4px;
+            }
 
-          .analysis-content {
-            color: #1f2937;
-            margin: 0;
+            .analysis-content {
+              color: #1f2937;
+              margin: 0;
+            }
           }
         }
       }
