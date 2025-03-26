@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 interface Exercise {
   id: string
   title: string
@@ -12,6 +10,17 @@ interface Exercise {
   timeLimit: number
   status: 'not_started' | 'in_progress' | 'completed'
   score?: number
+}
+
+interface Question {
+  id: number
+  type: string
+  content: string
+  options?: string[]
+  answer?: string
+  userAnswer?: string
+  score?: number
+  analysis?: string
 }
 
 const exercises = ref<Exercise[]>([
@@ -45,8 +54,41 @@ const exercises = ref<Exercise[]>([
   }
 ])
 
+// 模拟题目数据
+const questions = ref<Question[]>([
+  {
+    id: 1,
+    type: 'choice',
+    content: '下列分数中，最大的是？',
+    options: ['1/2', '2/3', '3/4', '4/5'],
+    answer: '4/5',
+    analysis: '通过通分或小数转换可以比较分数大小'
+  },
+  {
+    id: 2,
+    type: 'fill',
+    content: '在□里填上适当的数，使等式成立：3/4 + □ = 1',
+    answer: '1/4',
+    analysis: '用1减去3/4即可得到答案'
+  },
+  {
+    id: 3,
+    type: 'text',
+    content: '请解释为什么1/3不能写成有限小数？',
+    answer: '因为1÷3的除法过程中余数会循环出现，导致小数位无限循环',
+    analysis: '这涉及到分数转小数时的除法特性'
+  }
+])
+
 const activeTab = ref('all')
 const searchKeyword = ref('')
+const exerciseDialogVisible = ref(false)
+const reportDialogVisible = ref(false)
+const selectedExercise = ref<Exercise | null>(null)
+const currentQuestionIndex = ref(0)
+const userAnswers = ref<Record<number, string>>({})
+const timeRemaining = ref(0)
+const timer = ref<number | null>(null)
 
 const filteredExercises = computed(() => {
   return exercises.value.filter(exercise => {
@@ -60,6 +102,23 @@ const filteredExercises = computed(() => {
     
     return false
   })
+})
+
+const currentQuestion = computed(() => {
+  return questions.value[currentQuestionIndex.value]
+})
+
+const progress = computed(() => {
+  return {
+    percentage: (currentQuestionIndex.value + 1) / questions.value.length * 100,
+    text: `${currentQuestionIndex.value + 1}/${questions.value.length}`
+  }
+})
+
+const formattedTime = computed(() => {
+  const minutes = Math.floor(timeRemaining.value / 60)
+  const seconds = timeRemaining.value % 60
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 })
 
 const getDifficultyTag = (difficulty: string) => {
@@ -89,22 +148,91 @@ const getStatusTag = (status: string) => {
 }
 
 const startExercise = (exercise: Exercise) => {
-  // 实现开始练习的逻辑
-  console.log('开始练习:', exercise.title)
-  router.push(`/Exercise/${exercise.id}`)
+  selectedExercise.value = exercise
+  exerciseDialogVisible.value = true
+  currentQuestionIndex.value = 0
+  userAnswers.value = {}
+  timeRemaining.value = exercise.timeLimit * 60
+  startTimer()
 }
 
 const continueExercise = (exercise: Exercise) => {
-  // 实现继续练习的逻辑
-  console.log('继续练习:', exercise.title)
-  router.push(`/Exercise/${exercise.id}`)
-  
+  selectedExercise.value = exercise
+  exerciseDialogVisible.value = true
+  // 这里可以加载已保存的答案和进度
 }
 
 const viewReport = (exercise: Exercise) => {
-  // 实现查看报告的逻辑
-  console.log('查看报告:', exercise.title)
-  router.push(`/Exercise/${exercise.id}`)
+  selectedExercise.value = exercise
+  reportDialogVisible.value = true
+}
+
+const submitAnswer = () => {
+  if (currentQuestion.value) {
+    userAnswers.value[currentQuestion.value.id] = userAnswers.value[currentQuestion.value.id] || ''
+    
+    if (currentQuestionIndex.value < questions.value.length - 1) {
+      currentQuestionIndex.value++
+    } else {
+      finishExercise()
+    }
+  }
+}
+
+const previousQuestion = () => {
+  if (currentQuestionIndex.value > 0) {
+    currentQuestionIndex.value--
+  }
+}
+
+// const nextQuestion = () => {
+//   if (currentQuestionIndex.value < questions.value.length - 1) {
+//     currentQuestionIndex.value++
+//   }
+// }
+
+const finishExercise = () => {
+  if (timer.value) {
+    clearInterval(timer.value)
+    timer.value = null
+  }
+  
+  // 计算得分
+  let correctCount = 0
+  questions.value.forEach(question => {
+    if (userAnswers.value[question.id] === question.answer) {
+      correctCount++
+    }
+  })
+  
+  const score = Math.round((correctCount / questions.value.length) * 100)
+  
+  // 更新练习状态
+  if (selectedExercise.value) {
+    selectedExercise.value.status = 'completed'
+    selectedExercise.value.score = score
+  }
+  
+  exerciseDialogVisible.value = false
+  viewReport(selectedExercise.value!)
+}
+
+const startTimer = () => {
+  timer.value = setInterval(() => {
+    if (timeRemaining.value > 0) {
+      timeRemaining.value--
+    } else {
+      finishExercise()
+    }
+  }, 1000) as unknown as number
+}
+
+const closeExercise = () => {
+  if (timer.value) {
+    clearInterval(timer.value)
+    timer.value = null
+  }
+  exerciseDialogVisible.value = false
 }
 </script>
 
@@ -234,6 +362,149 @@ const viewReport = (exercise: Exercise) => {
         </div>
       </div>
     </el-card>
+
+    <!-- 练习对话框 -->
+    <el-dialog
+      v-model="exerciseDialogVisible"
+      :title="selectedExercise?.title"
+      width="70%"
+      :close-on-click-modal="false"
+      :before-close="closeExercise"
+    >
+      <div class="exercise-dialog">
+        <!-- 进度条和计时器 -->
+        <div class="exercise-header">
+          <el-progress
+            :percentage="progress.percentage"
+            :format="() => progress.text"
+            class="progress"
+          />
+          <div class="timer">
+            <el-icon><Timer /></el-icon>
+            {{ formattedTime }}
+          </div>
+        </div>
+
+        <!-- 题目内容 -->
+        <div class="question-content" v-if="currentQuestion">
+          <h3>第 {{ currentQuestionIndex + 1 }} 题</h3>
+          <p class="question-text">{{ currentQuestion.content }}</p>
+
+          <!-- 选择题 -->
+          <template v-if="currentQuestion.type === 'choice'">
+            <el-radio-group v-model="userAnswers[currentQuestion.id]">
+              <el-radio
+                v-for="option in currentQuestion.options"
+                :key="option"
+                :label="option"
+                class="question-option"
+              >
+                {{ option }}
+              </el-radio>
+            </el-radio-group>
+          </template>
+
+          <!-- 填空题 -->
+          <template v-else-if="currentQuestion.type === 'fill'">
+            <el-input
+              v-model="userAnswers[currentQuestion.id]"
+              placeholder="请输入答案"
+            />
+          </template>
+
+          <!-- 解答题 -->
+          <template v-else-if="currentQuestion.type === 'text'">
+            <el-input
+              v-model="userAnswers[currentQuestion.id]"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入答案"
+            />
+          </template>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="question-actions">
+          <el-button @click="previousQuestion" :disabled="currentQuestionIndex === 0">
+            上一题
+          </el-button>
+          <el-button
+            type="primary"
+            @click="submitAnswer"
+          >
+            {{ currentQuestionIndex === questions.length - 1 ? '提交' : '下一题' }}
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 报告对话框 -->
+    <el-dialog
+      v-model="reportDialogVisible"
+      title="练习报告"
+      width="70%"
+    >
+      <div class="report-dialog">
+        <!-- 总体得分 -->
+        <div class="score-section">
+          <div class="score-circle">
+            <h2>{{ selectedExercise?.score }}</h2>
+            <p>总分</p>
+          </div>
+          <div class="score-stats">
+            <div class="stat-item">
+              <span class="label">用时</span>
+              <span class="value">{{ selectedExercise?.timeLimit }}分钟</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">题目数</span>
+              <span class="value">{{ questions.length }}题</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">正确率</span>
+              <span class="value">{{ selectedExercise?.score }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 题目分析 -->
+        <div class="questions-analysis">
+          <h3>题目分析</h3>
+          <div
+            v-for="question in questions"
+            :key="question.id"
+            class="question-item"
+          >
+            <div class="question-header">
+              <span class="question-number">第{{ question.id }}题</span>
+              <el-tag
+                :type="userAnswers[question.id] === question.answer ? 'success' : 'danger'"
+                size="small"
+              >
+                {{ userAnswers[question.id] === question.answer ? '正确' : '错误' }}
+              </el-tag>
+            </div>
+            <p class="question-content">{{ question.content }}</p>
+            <div class="answer-section">
+              <p>
+                <span class="label">你的答案：</span>
+                <span :class="{ 'wrong-answer': userAnswers[question.id] !== question.answer }">
+                  {{ userAnswers[question.id] || '未作答' }}
+                </span>
+              </p>
+              <p>
+                <span class="label">正确答案：</span>
+                <span class="correct-answer">{{ question.answer }}</span>
+              </p>
+            </div>
+            <div class="analysis-section">
+              <p class="label">解析：</p>
+              <p class="analysis-content">{{ question.analysis }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -343,6 +614,183 @@ const viewReport = (exercise: Exercise) => {
 
         .exercise-actions {
           margin-left: 20px;
+        }
+      }
+    }
+  }
+
+  .exercise-dialog {
+    .exercise-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+
+      .progress {
+        flex: 1;
+        margin-right: 24px;
+      }
+
+      .timer {
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        color: #1f2937;
+
+        .el-icon {
+          margin-right: 8px;
+          color: #1890ff;
+        }
+      }
+    }
+
+    .question-content {
+      margin-bottom: 24px;
+
+      h3 {
+        margin: 0 0 16px;
+        color: #1f2937;
+      }
+
+      .question-text {
+        font-size: 16px;
+        color: #4b5563;
+        margin-bottom: 20px;
+      }
+
+      .question-option {
+        display: block;
+        margin-bottom: 12px;
+      }
+    }
+
+    .question-actions {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+  }
+
+  .report-dialog {
+    .score-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: #f8fafc;
+      border-radius: 8px;
+
+      .score-circle {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #1890ff;
+        border-radius: 50%;
+        color: white;
+        margin-right: 32px;
+
+        h2 {
+          margin: 0;
+          font-size: 36px;
+        }
+
+        p {
+          margin: 4px 0 0;
+          font-size: 14px;
+        }
+      }
+
+      .score-stats {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+
+        .stat-item {
+          text-align: center;
+
+          .label {
+            display: block;
+            color: #6b7280;
+            margin-bottom: 4px;
+          }
+
+          .value {
+            font-size: 24px;
+            color: #1f2937;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .questions-analysis {
+      h3 {
+        margin: 0 0 20px;
+        color: #1f2937;
+      }
+
+      .question-item {
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 16px;
+
+        .question-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+
+          .question-number {
+            font-weight: 500;
+            color: #1f2937;
+          }
+        }
+
+        .question-content {
+          color: #4b5563;
+          margin-bottom: 16px;
+        }
+
+        .answer-section {
+          margin-bottom: 16px;
+
+          p {
+            margin: 8px 0;
+          }
+
+          .label {
+            color: #6b7280;
+            margin-right: 8px;
+          }
+
+          .wrong-answer {
+            color: #dc2626;
+          }
+
+          .correct-answer {
+            color: #059669;
+          }
+        }
+
+        .analysis-section {
+          background: #f8fafc;
+          padding: 12px;
+          border-radius: 4px;
+
+          .label {
+            color: #6b7280;
+            margin-bottom: 4px;
+          }
+
+          .analysis-content {
+            color: #1f2937;
+            margin: 0;
+          }
         }
       }
     }

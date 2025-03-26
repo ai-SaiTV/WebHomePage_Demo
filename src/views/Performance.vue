@@ -148,6 +148,9 @@ const initSubjectChart = (el: HTMLElement) => {
         <h2>学习情况</h2>
         <p class="subtitle">查看学习进度和成绩分析</p>
       </div>
+      <div class="header-right">
+        <button> 错题生成</button>
+      </div>
     </div>
 
     <!-- 概览卡片 -->
@@ -203,7 +206,9 @@ const initSubjectChart = (el: HTMLElement) => {
           </template>
           <div class="point-list">
             <div v-for="(point, index) in weakPoints" :key="index" class="point-item">
-              <el-icon class="warning-icon"><Warning /></el-icon>
+              <el-icon class="warning-icon">
+                <Warning />
+              </el-icon>
               <span>{{ point }}</span>
             </div>
           </div>
@@ -218,7 +223,9 @@ const initSubjectChart = (el: HTMLElement) => {
           </template>
           <div class="point-list">
             <div v-for="(point, index) in strengths" :key="index" class="point-item">
-              <el-icon class="success-icon"><CircleCheckFilled /></el-icon>
+              <el-icon class="success-icon">
+                <CircleCheckFilled />
+              </el-icon>
               <span>{{ point }}</span>
             </div>
           </div>
@@ -232,16 +239,58 @@ const initSubjectChart = (el: HTMLElement) => {
 .performance-container {
   .page-header {
     margin-bottom: 24px;
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     h2 {
       margin: 0;
       font-size: 24px;
       color: #1f2937;
     }
 
-    .subtitle {
-      margin: 4px 0 0;
-      color: #6b7280;
+
+
+    .header-left {
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        color: #1f2937;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        color: #6b7280;
+      }
+
+    }
+
+    .header-right {
+      padding: 0.6em 1.2em;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 1em;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.25s;
+      button {
+        padding: 1rem;
+        font-size: 1.2rem;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s ease;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        background-color: #bd0a0a;
+        color: white;
+      }
+
+      :hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+        box-shadow: 0 6px 15px rgba($color: #000000, $alpha: 0.5);
+      }
     }
   }
 
