@@ -26,8 +26,8 @@ interface Question {
 const exercises = ref<Exercise[]>([
   {
     id: '1',
-    title: '分数运算专项练习',
-    subject: '数学',
+    title: '杨氏之子练习',
+    subject: '语文',
     difficulty: '中等',
     questionCount: 10,
     timeLimit: 30,
@@ -58,25 +58,38 @@ const exercises = ref<Exercise[]>([
 const questions = ref<Question[]>([
   {
     id: 1,
-    type: 'choice',
-    content: '下列分数中，最大的是？',
-    options: ['1/2', '2/3', '3/4', '4/5'],
-    answer: '4/5',
-    analysis: '通过通分或小数转换可以比较分数大小'
+    type: 'fill',
+    content: '一、看拼音写词语：\n1. liáng guō（ ）\n2. cōng huì（ ）\n3. zào yì（ ）\n4. kǒng zǐ yuē（ ）\n5. jiā qín（ ）',
+    answer: '梁国 聪慧 造诣 孔子曰 家禽',
+    analysis: '通过拼音写词语，考察学生对拼音的识记能力'
   },
   {
     id: 2,
     type: 'fill',
-    content: '在□里填上适当的数，使等式成立：3/4 + □ = 1',
-    answer: '1/4',
-    analysis: '用1减去3/4即可得到答案'
+    content: '二、解释下面句子中带点的字。\n1. 孔君平诣其父，父不在，乃呼儿出。\n诣： \n乃： \n2. 孔指以示儿曰。\n示： \n曰： \n3. 未闻孔雀是夫子家禽\n未：     \n闻： ',
+    answer: '拜见 于是，就 给……看 说 没有 听见',
+    analysis: '通过解释句子中带点的字，考察学生对词语的理解能力'
   },
   {
     id: 3,
     type: 'text',
-    content: '请解释为什么1/3不能写成有限小数？',
-    answer: '因为1÷3的除法过程中余数会循环出现，导致小数位无限循环',
-    analysis: '这涉及到分数转小数时的除法特性'
+    content: '三、仔细读下面的句子，回答问题。\n孔指以示儿曰：“此是君家果。”儿应声答曰：“未闻孔雀是夫子家禽。”\n1. 对话意思：\n2. 对话精妙极了，妙在何处？”',
+    answer: '1.孔君平指着杨梅给杨家儿子看，说：“这是你家的果子。”杨家儿子答道：“没有听说孔雀是您家的家禽。2.都根据人物姓氏来借题发挥，杨家儿子反应极快，才思敏捷。',
+    analysis: '通过阅读对话，回答问题，考察学生对课文的理解能力'
+  },
+  {
+    id: 4,
+    type: 'fill',
+    content:'四、仿照下面句子，以四季的水果作内容写两个句子。\n春天的杨梅吮吸着甘露，在雨水中欢笑。\n夏天的西瓜，__________。\n秋天的橘子，__________。',
+    answer: '夏天的西瓜沐浴着阳光，在藤蔓上微笑。\n秋天的橘子感受着秋风，在枝头上歌唱。',
+    analysis: '通过仿照句子，写两个句子，考察学生的语言表达能力'
+  },
+  {
+    id:5,
+    type: 'fill',
+    content:'五、熟读课文，再填空。\n梁国杨氏之子__________，甚__________。孔君平__________其父，父不在......果有杨梅。孔指以示儿\n曰：__________“。”儿应声答曰：“__________。”',
+    answer:'九岁 聪惠 诣 此是君家果 未闻孔雀是夫子家禽',
+    analysis:'通过熟读课文，填空，考察学生对课文的理解能力'  
   }
 ])
 
@@ -668,6 +681,7 @@ const closeExercise = () => {
           font-size: 16px;
           color: #4b5563;
           margin-bottom: 20px;
+          white-space: pre-wrap;
         }
 
         .question-option {
