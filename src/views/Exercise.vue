@@ -80,16 +80,16 @@ const questions = ref<Question[]>([
   {
     id: 4,
     type: 'fill',
-    content:'四、仿照下面句子，以四季的水果作内容写两个句子。\n春天的杨梅吮吸着甘露，在雨水中欢笑。\n夏天的西瓜，__________。\n秋天的橘子，__________。',
+    content: '四、仿照下面句子，以四季的水果作内容写两个句子。\n春天的杨梅吮吸着甘露，在雨水中欢笑。\n夏天的西瓜，__________。\n秋天的橘子，__________。',
     answer: '夏天的西瓜沐浴着阳光，在藤蔓上微笑。\n秋天的橘子感受着秋风，在枝头上歌唱。',
     analysis: '通过仿照句子，写两个句子，考察学生的语言表达能力'
   },
   {
-    id:5,
+    id: 5,
     type: 'fill',
-    content:'五、熟读课文，再填空。\n梁国杨氏之子__________，甚__________。孔君平__________其父，父不在......果有杨梅。孔指以示儿\n曰：__________“。”儿应声答曰：“__________。”',
-    answer:'九岁 聪惠 诣 此是君家果 未闻孔雀是夫子家禽',
-    analysis:'通过熟读课文，填空，考察学生对课文的理解能力'  
+    content: '五、熟读课文，再填空。\n梁国杨氏之子__________，甚__________。孔君平__________其父，父不在......果有杨梅。孔指以示儿\n曰：__________“。”儿应声答曰：“__________。”',
+    answer: '九岁 聪惠 诣 此是君家果 未闻孔雀是夫子家禽',
+    analysis: '通过熟读课文，填空，考察学生对课文的理解能力'
   }
 ])
 
@@ -107,13 +107,13 @@ const questionsContainer = ref<HTMLElement | null>(null)
 const filteredExercises = computed(() => {
   return exercises.value.filter(exercise => {
     const matchesSearch = exercise.title.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
-                         exercise.subject.toLowerCase().includes(searchKeyword.value.toLowerCase())
-    
+      exercise.subject.toLowerCase().includes(searchKeyword.value.toLowerCase())
+
     if (activeTab.value === 'all') return matchesSearch
     if (activeTab.value === 'not_started') return exercise.status === 'not_started' && matchesSearch
     if (activeTab.value === 'in_progress') return exercise.status === 'in_progress' && matchesSearch
     if (activeTab.value === 'completed') return exercise.status === 'completed' && matchesSearch
-    
+
     return false
   })
 })
@@ -187,7 +187,7 @@ const submitAnswer = () => {
 
 const scrollToQuestion = (questionId: number) => {
   if (!questionsContainer.value) return
-  
+
   nextTick(() => {
     const questionElement = document.getElementById(`question-${questionId}`)
     currentQuestionIndex.value = questions.value.findIndex(question => question.id === questionId)
@@ -202,7 +202,7 @@ const finishExercise = () => {
     clearInterval(timer.value)
     timer.value = null
   }
-  
+
   // 计算得分
   let correctCount = 0
   questions.value.forEach(question => {
@@ -210,15 +210,15 @@ const finishExercise = () => {
       correctCount++
     }
   })
-  
+
   const score = Math.round((correctCount / questions.value.length) * 100)
-  
+
   // 更新练习状态
   if (selectedExercise.value) {
     selectedExercise.value.status = 'completed'
     selectedExercise.value.score = score
   }
-  
+
   exerciseDialogVisible.value = false
   viewReport(selectedExercise.value!)
 }
@@ -251,12 +251,7 @@ const closeExercise = () => {
         <p class="subtitle">选择合适的练习提升能力</p>
       </div>
       <div class="header-right">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索练习"
-          prefix-icon="Search"
-          clearable
-        />
+        <el-input v-model="searchKeyword" placeholder="搜索练习" prefix-icon="Search" clearable />
       </div>
     </div>
 
@@ -265,7 +260,9 @@ const closeExercise = () => {
       <el-col :span="8">
         <el-card class="stat-card">
           <div class="stat-content">
-            <el-icon class="stat-icon" color="#1890ff"><Edit /></el-icon>
+            <el-icon class="stat-icon" color="#1890ff">
+              <Edit />
+            </el-icon>
             <div class="stat-info">
               <div class="stat-value">12</div>
               <div class="stat-label">今日练习题数</div>
@@ -276,7 +273,9 @@ const closeExercise = () => {
       <el-col :span="8">
         <el-card class="stat-card">
           <div class="stat-content">
-            <el-icon class="stat-icon" color="#52c41a"><CircleCheckFilled /></el-icon>
+            <el-icon class="stat-icon" color="#52c41a">
+              <CircleCheckFilled />
+            </el-icon>
             <div class="stat-info">
               <div class="stat-value">85%</div>
               <div class="stat-label">正确率</div>
@@ -287,7 +286,9 @@ const closeExercise = () => {
       <el-col :span="8">
         <el-card class="stat-card">
           <div class="stat-content">
-            <el-icon class="stat-icon" color="#722ed1"><Timer /></el-icon>
+            <el-icon class="stat-icon" color="#722ed1">
+              <Timer />
+            </el-icon>
             <div class="stat-info">
               <div class="stat-value">45</div>
               <div class="stat-label">练习时长(分钟)</div>
@@ -311,39 +312,35 @@ const closeExercise = () => {
       </template>
 
       <div class="exercise-list">
-        <div
-          v-for="exercise in filteredExercises"
-          :key="exercise.id"
-          class="exercise-item"
-        >
+        <div v-for="exercise in filteredExercises" :key="exercise.id" class="exercise-item">
           <div class="exercise-info">
             <h3>{{ exercise.title }}</h3>
             <div class="exercise-tags">
               <el-tag size="small">{{ exercise.subject }}</el-tag>
-              <el-tag
-                size="small"
-                :type="getDifficultyTag(exercise.difficulty)"
-              >
+              <el-tag size="small" :type="getDifficultyTag(exercise.difficulty)">
                 {{ exercise.difficulty }}
               </el-tag>
-              <el-tag
-                size="small"
-                :type="getStatusTag(exercise.status).type"
-              >
+              <el-tag size="small" :type="getStatusTag(exercise.status).type">
                 {{ getStatusTag(exercise.status).label }}
               </el-tag>
             </div>
             <div class="exercise-details">
               <span>
-                <el-icon><Document /></el-icon>
+                <el-icon>
+                  <Document />
+                </el-icon>
                 {{ exercise.questionCount }}题
               </span>
               <span>
-                <el-icon><Timer /></el-icon>
+                <el-icon>
+                  <Timer />
+                </el-icon>
                 {{ exercise.timeLimit }}分钟
               </span>
               <span v-if="exercise.score !== undefined">
-                <el-icon><DataLine /></el-icon>
+                <el-icon>
+                  <DataLine />
+                </el-icon>
                 得分：{{ exercise.score }}
               </span>
             </div>
@@ -370,42 +367,31 @@ const closeExercise = () => {
     </el-card>
 
     <!-- 练习对话框 -->
-    <el-dialog
-      v-model="exerciseDialogVisible"
-      :title="selectedExercise?.title"
-      width="50%"
-      :close-on-click-modal="false"
-      :before-close="closeExercise"
-    >
+    <el-dialog v-model="exerciseDialogVisible" :title="selectedExercise?.title" width="50%"
+      :close-on-click-modal="false" :before-close="closeExercise">
       <div class="exercise-dialog">
         <!-- 进度条和计时器 -->
         <div class="exercise-header">
-          <el-progress
-            :percentage="progress.percentage"
-            :format="() => progress.text"
-            class="progress"
-          />
+          <el-progress :percentage="progress.percentage" :format="() => progress.text" class="progress" />
           <div class="timer">
-            <el-icon><Timer /></el-icon>
+            <el-icon>
+              <Timer />
+            </el-icon>
             {{ formattedTime }}
           </div>
         </div>
 
         <!-- 题目内容区域（可滚动） -->
         <div class="questions-container" ref="questionsContainer">
-          <div v-for="(question, index) in questions" :key="question.id" class="question-content" :id="`question-${question.id}`">
+          <div v-for="(question, index) in questions" :key="question.id" class="question-content"
+            :id="`question-${question.id}`">
             <h3>第 {{ index + 1 }} 题</h3>
             <p class="question-text">{{ question.content }}</p>
 
             <!-- 选择题 -->
             <template v-if="question.type === 'choice'">
               <el-radio-group v-model="userAnswers[question.id]" @click="scrollToQuestion(question.id)">
-                <el-radio
-                  v-for="option in question.options"
-                  :key="option"
-                  :label="option"
-                  class="question-option"
-                >
+                <el-radio v-for="option in question.options" :key="option" :label="option" class="question-option">
                   {{ option }}
                 </el-radio>
               </el-radio-group>
@@ -413,32 +399,20 @@ const closeExercise = () => {
 
             <!-- 填空题 -->
             <template v-else-if="question.type === 'fill'">
-              <el-input
-                v-model="userAnswers[question.id]"
-                placeholder="请输入答案"
-                @focus="scrollToQuestion(question.id)"
-              />
+              <el-input v-model="userAnswers[question.id]" placeholder="请输入答案" @focus="scrollToQuestion(question.id)" />
             </template>
 
             <!-- 解答题 -->
             <template v-else-if="question.type === 'text'">
-              <el-input
-                v-model="userAnswers[question.id]"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入答案"
-                @focus="scrollToQuestion(question.id)"
-              />
+              <el-input v-model="userAnswers[question.id]" type="textarea" :rows="4" placeholder="请输入答案"
+                @focus="scrollToQuestion(question.id)" />
             </template>
           </div>
         </div>
 
         <!-- 提交按钮 -->
         <div class="submit-button">
-          <el-button
-            type="primary"
-            @click="submitAnswer"
-          >
+          <el-button type="primary" @click="submitAnswer">
             提交
           </el-button>
         </div>
@@ -446,11 +420,7 @@ const closeExercise = () => {
     </el-dialog>
 
     <!-- 报告对话框 -->
-    <el-dialog
-      v-model="reportDialogVisible"
-      title="练习报告"
-      width="50%"
-    >
+    <el-dialog v-model="reportDialogVisible" title="练习报告" width="50%">
       <div class="report-dialog">
         <!-- 总体得分 -->
         <div class="score-section">
@@ -476,19 +446,15 @@ const closeExercise = () => {
 
         <!-- 题目分析（可滚动） -->
         <div class="questions-analysis">
+          <div class="header-right">
+            <button> 错题生成</button>
+          </div>
           <h3>题目分析</h3>
           <div class="questions-analysis-container">
-            <div
-              v-for="question in questions"
-              :key="question.id"
-              class="question-item"
-            >
+            <div v-for="question in questions" :key="question.id" class="question-item">
               <div class="question-header">
                 <span class="question-number">第{{ question.id }}题</span>
-                <el-tag
-                  :type="userAnswers[question.id] === question.answer ? 'success' : 'danger'"
-                  size="small"
-                >
+                <el-tag :type="userAnswers[question.id] === question.answer ? 'success' : 'danger'" size="small">
                   {{ userAnswers[question.id] === question.answer ? '正确' : '错误' }}
                 </el-tag>
               </div>
@@ -579,7 +545,7 @@ const closeExercise = () => {
     .exercise-list {
       max-height: 60vh;
       overflow-y: auto;
-      
+
       .exercise-item {
         display: flex;
         justify-content: space-between;
@@ -660,7 +626,7 @@ const closeExercise = () => {
       overflow-y: auto;
       padding-right: 10px;
       margin-bottom: 24px;
-      
+
       .question-content {
         margin-bottom: 24px;
         padding-bottom: 20px;
@@ -758,6 +724,37 @@ const closeExercise = () => {
       h3 {
         margin: 0 0 20px;
         color: #1f2937;
+      }
+
+      .header-right {
+        padding: 0.6em 1.2em;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        font-size: 1em;
+        font-weight: 200;
+        font-family: inherit;
+        cursor: pointer;
+        transition: border-color 0.25s;
+        display: flex;
+        justify-content: flex-end;
+        button {
+          padding: 1rem;
+          font-size: 1.2rem;
+          border: none;
+          cursor: pointer;
+          transition: 0.3s ease;
+          width: 20%;
+          border-radius: 8px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+          background-color: #bd0a0a;
+          color: white;
+        }
+
+        :hover {
+          transform: scale(1.05);
+          opacity: 0.9;
+          box-shadow: 0 6px 15px rgba($color: #000000, $alpha: 0.5);
+        }
       }
 
       .questions-analysis-container {
