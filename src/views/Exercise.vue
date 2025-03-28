@@ -1,59 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-
-interface Exercise {
-  id: string
-  title: string
-  subject: string
-  difficulty: string
-  questionCount: number
-  timeLimit: number
-  status: 'not_started' | 'in_progress' | 'completed'
-  score?: number
-}
-
-interface Question {
-  id: number
-  type: string
-  content: string
-  options?: string[]
-  answer?: string
-  userAnswer?: string
-  score?: number
-  analysis?: string
-}
-
-const exercises = ref<Exercise[]>([
-  {
-    id: '1',
-    title: '杨氏之子练习',
-    subject: '语文',
-    difficulty: '中等',
-    questionCount: 10,
-    timeLimit: 30,
-    status: 'not_started'
-  },
-  {
-    id: '2',
-    title: '几何图形基础练习',
-    subject: '数学',
-    difficulty: '简单',
-    questionCount: 15,
-    timeLimit: 45,
-    status: 'completed',
-    score: 92
-  },
-  {
-    id: '3',
-    title: '方程式解法练习',
-    subject: '数学',
-    difficulty: '较难',
-    questionCount: 8,
-    timeLimit: 25,
-    status: 'in_progress'
-  }
-])
-
 // 模拟题目数据
 const questions = ref<Question[]>([
   {
@@ -92,6 +38,100 @@ const questions = ref<Question[]>([
     analysis: '通过熟读课文，填空，考察学生对课文的理解能力'
   }
 ])
+const errorquestions = ref<Question[]>([
+  {
+    id: 1,
+    type: 'choice',
+    content: '结合阅读体会，你认为杨氏之子的回答妙在哪里?',
+    options: [
+      '都根据人物姓氏来借题发挥',
+      '杨氏之子以肯定的语气表示出杨梅不是自己家的果子',
+      '指出了孔君平的“孔”是孔雀的“孔”',
+      '虽然否定了孔君平的话，但是没有保留着对长辈的尊重。'
+    ],
+    answer: '都根据人物姓氏来借题发挥',
+    analysis: '通过选择题，考察学生对课文的理解能力'
+  },
+  {
+    id: 2,
+    type: 'choice',
+    content: '给加点字选择正确的读音',
+    options: [
+      '孔军平诣（yī）其父',
+      '乃（nài）呼儿出',
+      '孔子曰（yuē）',
+      '未（wéi）闻孔雀是夫子家禽'
+    ],
+    answer: '孔子曰（yuē）',
+    analysis: '通过选择题，考察学生对重点词语发音的掌握能力'
+  },
+  {
+    id: 3,
+    type: 'fill',
+    content: '解释下面句子中带点的字。\n1. 孔君平诣其父，父不在，乃呼儿出。\n诣： \n乃：',
+    answer: '拜见 于是，就',
+    analysis: '通过解释句子中带点的字，考察学生对词语的理解能力'
+  }
+]);
+interface Exercise {
+  id: string
+  title: string
+  subject: string
+  difficulty: string
+  questionCount: number
+  timeLimit: number
+  status: 'not_started' | 'in_progress' | 'completed'
+  score?: number
+  questions?: Question[]
+}
+
+interface Question {
+  id: number
+  type: string
+  content: string
+  options?: string[]
+  answer?: string
+  userAnswer?: string
+  score?: number
+  analysis?: string
+}
+
+const exercises = ref<Exercise[]>([
+  {
+    id: '1',
+    title: '杨氏之子练习',
+    subject: '语文',
+    difficulty: '中等',
+    questionCount: 10,
+    timeLimit: 30,
+    status: 'not_started',
+    questions: questions.value
+  },
+  {
+    id: '2',
+    title: '几何图形基础练习',
+    subject: '数学',
+    difficulty: '简单',
+    questionCount: 15,
+    timeLimit: 45,
+    status: 'completed',
+    score: 92,
+    questions: questions.value
+  },
+  {
+    id: '3',
+    title: '方程式解法练习',
+    subject: '数学',
+    difficulty: '较难',
+    questionCount: 8,
+    timeLimit: 25,
+    status: 'in_progress',
+    questions: questions.value
+  }
+])
+
+
+
 
 const activeTab = ref('all')
 const searchKeyword = ref('')
@@ -103,6 +143,7 @@ const userAnswers = ref<Record<number, string>>({})
 const timeRemaining = ref(0)
 const timer = ref<number | null>(null)
 const questionsContainer = ref<HTMLElement | null>(null)
+const loadingDialogVisible = ref(false)
 
 const filteredExercises = computed(() => {
   return exercises.value.filter(exercise => {
@@ -123,9 +164,10 @@ const filteredExercises = computed(() => {
 // })
 
 const progress = computed(() => {
+  const q = selectedExercise.value?.questions || [] 
   return {
-    percentage: (currentQuestionIndex.value + 1) / questions.value.length * 100,
-    text: `${currentQuestionIndex.value + 1}/${questions.value.length}`
+    percentage: (currentQuestionIndex.value + 1) /  q.length * 100,
+    text: `${currentQuestionIndex.value + 1}/${q.length}`
   }
 })
 
@@ -184,7 +226,25 @@ const viewReport = (exercise: Exercise) => {
 const submitAnswer = () => {
   finishExercise()
 }
-
+const Errorgeneration = () => {
+  reportDialogVisible.value = false
+  loadingDialogVisible.value = true
+  setTimeout(() => {
+    exercises.value.unshift({
+      id: '4',
+      title: '错题练习',
+      subject: '语文',
+      difficulty: '中等',
+      questionCount: errorquestions.value.length,
+      timeLimit: 30,
+      status: 'not_started',
+      questions: errorquestions.value
+    })
+    selectedExercise.value = exercises.value[0]
+    loadingDialogVisible.value = false
+  }, 2000
+  )
+}
 const scrollToQuestion = (questionId: number) => {
   if (!questionsContainer.value) return
 
@@ -205,13 +265,14 @@ const finishExercise = () => {
 
   // 计算得分
   let correctCount = 0
-  questions.value.forEach(question => {
-    if (userAnswers.value[question.id] === question.answer) {
+  const q = selectedExercise.value?.questions || []
+  q.forEach(q => {
+    if (userAnswers.value[q.id] === q.answer) {
       correctCount++
     }
   })
 
-  const score = Math.round((correctCount / questions.value.length) * 100)
+  const score = Math.round((correctCount / q.length) * 100)
 
   // 更新练习状态
   if (selectedExercise.value) {
@@ -383,7 +444,7 @@ const closeExercise = () => {
 
         <!-- 题目内容区域（可滚动） -->
         <div class="questions-container" ref="questionsContainer">
-          <div v-for="(question, index) in questions" :key="question.id" class="question-content"
+          <div v-for="(question, index) in selectedExercise?.questions" :key="question.id" class="question-content"
             :id="`question-${question.id}`">
             <h3>第 {{ index + 1 }} 题</h3>
             <p class="question-text">{{ question.content }}</p>
@@ -447,11 +508,11 @@ const closeExercise = () => {
         <!-- 题目分析（可滚动） -->
         <div class="questions-analysis">
           <div class="header-right">
-            <button> 错题生成</button>
+            <button @click="Errorgeneration"> 错题生成</button>
           </div>
           <h3>题目分析</h3>
           <div class="questions-analysis-container">
-            <div v-for="question in questions" :key="question.id" class="question-item">
+            <div v-for="question in selectedExercise?.questions" :key="question.id" class="question-item">
               <div class="question-header">
                 <span class="question-number">第{{ question.id }}题</span>
                 <el-tag :type="userAnswers[question.id] === question.answer ? 'success' : 'danger'" size="small">
@@ -478,6 +539,15 @@ const closeExercise = () => {
             </div>
           </div>
         </div>
+      </div>
+    </el-dialog>
+
+    <!-- Loading 对话框 -->
+    <el-dialog v-model="loadingDialogVisible" title="生成错题中" width="30%" :close-on-click-modal="false"
+      :show-close="false">
+      <div class="loading-dialog">
+        <el-loading type="circle" />
+        <p>正在生成中....</p>
       </div>
     </el-dialog>
   </div>
@@ -737,6 +807,7 @@ const closeExercise = () => {
         transition: border-color 0.25s;
         display: flex;
         justify-content: flex-end;
+
         button {
           padding: 1rem;
           font-size: 1.2rem;
@@ -827,6 +898,24 @@ const closeExercise = () => {
           }
         }
       }
+    }
+  }
+
+  .loading-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+
+    .el-spinner {
+      margin-bottom: 16px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      color: #1f2937;
     }
   }
 }
