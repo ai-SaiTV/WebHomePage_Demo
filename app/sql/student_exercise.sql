@@ -27,6 +27,7 @@ CREATE TABLE `exercise` (
   `title` varchar(100) NOT NULL COMMENT '练习标题',
   `subject` varchar(50) NOT NULL COMMENT '科目',
   `difficulty` varchar(50) NOT NULL COMMENT '难度',
+  `question` varchar(30) NOT NULL COMMENT '题目',
   `questionCount` int NOT NULL COMMENT '题目数量',
   `timeLimit` int NOT NULL COMMENT '时间限制(分钟)',
   `status` varchar(20) NOT NULL COMMENT '状态',
