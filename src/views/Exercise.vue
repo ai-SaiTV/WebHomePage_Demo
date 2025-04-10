@@ -2,154 +2,209 @@
 import { ref, computed, nextTick } from 'vue'
 // 模拟题目数据
 const questions = ref<Question[]>([
-  // {
-  //   id: 1,
-  //   type: 'fill',
-  //   content: '一、看拼音写词语：\n1. liáng guō（ ）\n2. cōng huì（ ）\n3. zào yì（ ）\n4. kǒng zǐ yuē（ ）\n5. jiā qín（ ）',
-  //   answer: '梁国 聪慧 造诣 孔子曰 家禽',
-  //   analysis: '通过拼音写词语，考察学生对拼音的识记能力'
-  // },
-  // {
-  //   id: 2,
-  //   type: 'fill',
-  //   content: '二、解释下面句子中带点的字。\n1. 孔君平诣其父，父不在，乃呼儿出。\n诣： \n乃： \n2. 孔指以示儿曰。\n示： \n曰： \n3. 未闻孔雀是夫子家禽\n未：     \n闻： ',
-  //   answer: '拜见 于是，就 给……看 说 没有 听见',
-  //   analysis: '通过解释句子中带点的字，考察学生对词语的理解能力'
-  // },
-  // {
-  //   id: 3,
-  //   type: 'text',
-  //   content: '三、仔细读下面的句子，回答问题。\n孔指以示儿曰：“此是君家果。”儿应声答曰：“未闻孔雀是夫子家禽。”\n1. 对话意思：\n2. 对话精妙极了，妙在何处？”',
-  //   answer: '1.孔君平指着杨梅给杨家儿子看，说：“这是你家的果子。”杨家儿子答道：“没有听说孔雀是您家的家禽。2.都根据人物姓氏来借题发挥，杨家儿子反应极快，才思敏捷。',
-  //   analysis: '通过阅读对话，回答问题，考察学生对课文的理解能力'
-  // },
-  // {
-  //   id: 4,
-  //   type: 'fill',
-  //   content: '四、仿照下面句子，以四季的水果作内容写两个句子。\n春天的杨梅吮吸着甘露，在雨水中欢笑。\n夏天的西瓜，__________。\n秋天的橘子，__________。',
-  //   answer: '夏天的西瓜沐浴着阳光，在藤蔓上微笑。\n秋天的橘子感受着秋风，在枝头上歌唱。',
-  //   analysis: '通过仿照句子，写两个句子，考察学生的语言表达能力'
-  // },
-  // {
-  //   id: 5,
-  //   type: 'fill',
-  //   content: '五、熟读课文，再填空。\n梁国杨氏之子__________，甚__________。孔君平__________其父，父不在......果有杨梅。孔指以示儿\n曰：__________“。”儿应声答曰：“__________。”',
-  //   answer: '九岁 聪惠 诣 此是君家果 未闻孔雀是夫子家禽',
-  //   analysis: '通过熟读课文，填空，考察学生对课文的理解能力'
-  // }
-  //数学
+  //英语
   {
     "id": 1,
     "type": "choice",
-    "content": "一个两位数由三个不同的质数相乘得到，这个数的因数有几个?",
+    "content": "单项选择题\n Whose jeans are these?",
     "options": [
-      "3",
-      "8",
-      "10"
+      "They're Linda's",
+      "They are Linda",
+      "It's Linda's"
     ],
-    "answer": "8",
-    "analysis": "若一个数由三个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)(1+1)=8 个。"
+    "answer": "They're Linda's",
+    "analysis": "题目考查所有格的用法，表示“某人的某物”时需用所有格形式。正确答案是 'They're Linda's'，表示这些牛仔裤是Linda的。"
   },
   {
     "id": 2,
-    "type": "fill",
-    "content": "四个连续自然数的积是840，那四个自然数的和是多少?",
-    "answer": "26",
-    "analysis": "设四个连续自然数为 n, n+1, n+2, n+3，则 n(n+1)(n+2)(n+3)=840，解得 n=3，因此四个自然数为 3, 4, 5, 6，它们的和为 18。"
+    "type": "choice",
+    "content": "There __ beautiful flowers everywhere.",
+    "options": [
+      "are",
+      "is",
+      "Many"
+    ],
+    "answer": "are",
+    "analysis": "本题考查主谓一致。主语 'beautiful flowers' 是复数，因此谓语动词需用复数形式 'are'。"
   },
   {
     "id": 3,
     "type": "text",
-    "content": "计算:\n1. 2.4+3.2*14-5/2",
-    "answer": "44.7",
-    "analysis": "先乘除后加减，\n3.2*14=44.8,\n5/2=2.5,\n2.4+44.8-2.5=44.7"
+    "content": "用单词的适当形式填空。\n What can you ___________(do)",
+    "answer": "do",
+    "analysis": "题目考查情态动词的用法。情态动词 'can' 后跟动词原形，因此答案是 'do'。"
   },
   {
     "id": 4,
     "type": "choice",
-    "content": "一个两位数由两个不同的质数相乘得到，这个数的因数有几个?",
+    "content": "单项选择题\n This book is very _________.",
     "options": [
-      "4",
-      "6",
-      "8"
+      "interest",
+      "interesting",
+      "interested"
     ],
-    "answer": "4",
-    "analysis": "若一个数由两个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)=4 个。"
+    "answer": "interesting",
+    "analysis": "考查形容词用法。形容事物本身具有吸引力时用 'interesting'；表示人的感受用 'interested'。本句描述书的特性，因此选择 'interesting'。"
   },
   {
     "id": 5,
-    "type": "choice",
-    "content": "质数 13、17、19 的和是多少?",
-    "options": [
-      "47",
-      "49",
-      "51"
-    ],
-    "answer": "49",
-    "analysis": "13+17+19=49。"
+    "type": "text",
+    "content": "用正确形式填空。\n She __________(go) to school every day.",
+    "answer": "goes",
+    "analysis": "题目考查一般现在时主谓一致。主语 'She' 是第三人称单数，现在时动词需加 -s，因此答案是 'goes'。"
   },
   {
     "id": 6,
     "type": "choice",
-    "content": "求质数 2、3、5、7 的乘积。",
+    "content": "单项选择题\n How _______ milk do you want?",
     "options": [
-      "210",
-      "231",
-      "252"
+      "many",
+      "much",
+      "a lot"
     ],
-    "answer": "210",
-    "analysis": "2*3*5*7=210。"
+    "answer": "much",
+    "analysis": "考查量词的使用。milk 是不可数名词，修饰不可数名词时用 'much'。"
   },
   {
     "id": 7,
-    "type": "choice",
-    "content": "一个三位数由两个不同的质数相乘得到，这个数的因数有几个?",
-    "options": [
-      "4",
-      "6",
-      "8"
-    ],
-    "answer": "4",
-    "analysis": "若一个数由两个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)=4 个。"
+    "type": "text",
+    "content": "用单词的适当形式填空。\n The children __________(be) playing in the park.",
+    "answer": "are",
+    "analysis": "考查现在进行时的构成。主语 'The children' 是复数，be 动词需用复数形式 'are'，因此答案是 'are'。"
   },
   {
     "id": 8,
-    "type": "text",
-    "content": "计算：2^5 - 3^3",
-    "answer": "29",
-    "analysis": "2^5=32，3^3=27，32-27=5。"
+    "type": "choice",
+    "content": "单项选择题\n She ______ in the library yesterday.",
+    "options": [
+      "is",
+      "was",
+      "were"
+    ],
+    "answer": "was",
+    "analysis": "考查过去时态。主语 'She' 是第三人称单数，过去时需用 'was'。"
   },
   {
     "id": 9,
-    "type": "choice",
-    "content": "质数 11、13、17 的乘积是多少?",
-    "options": [
-      "2431",
-      "2413",
-      "2341"
-    ],
-    "answer": "2431",
-    "analysis": "11*13*17=2431。"
-  },
-  {
-    "id": 10,
-    "type": "choice",
-    "content": "一个两位数由三个不同的质数相乘得到，这个数的因数有几个?",
-    "options": [
-      "6",
-      "8",
-      "10"
-    ],
-    "answer": "8",
-    "analysis": "若一个数由三个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)(1+1)=8 个。"
-  },
-  {
-    "id": 11,
     "type": "text",
-    "content": "计算：5*7 + 11 - 2^3",
-    "answer": "40",
-    "analysis": "5*7=35，2^3=8，35+11-8=38。"
-  }
+    "content": "用单词的适当形式填空。\n I like ____________(swim) in summer.",
+    "answer": "swimming",
+    "analysis": "考查动名词的用法。like 后常接动名词形式，表示喜欢做某事，因此答案是 'swimming'。"
+  },
+
+  //数学
+  // {
+  //   "id": 1,
+  //   "type": "choice",
+  //   "content": "一个两位数由三个不同的质数相乘得到，这个数的因数有几个?",
+  //   "options": [
+  //     "3",
+  //     "8",
+  //     "10"
+  //   ],
+  //   "answer": "8",
+  //   "analysis": "若一个数由三个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)(1+1)=8 个。"
+  // },
+  // {
+  //   "id": 2,
+  //   "type": "fill",
+  //   "content": "四个连续自然数的积是840，那四个自然数的和是多少?",
+  //   "answer": "26",
+  //   "analysis": "设四个连续自然数为 n, n+1, n+2, n+3，则 n(n+1)(n+2)(n+3)=840，解得 n=3，因此四个自然数为 3, 4, 5, 6，它们的和为 18。"
+  // },
+  // {
+  //   "id": 3,
+  //   "type": "text",
+  //   "content": "计算:\n1. 2.4+3.2*14-5/2",
+  //   "answer": "44.7",
+  //   "analysis": "先乘除后加减，\n3.2*14=44.8,\n5/2=2.5,\n2.4+44.8-2.5=44.7"
+  // },
+  // {
+  //   "id": 4,
+  //   "type": "choice",
+  //   "content": "一个两位数由两个不同的质数相乘得到，这个数的因数有几个?",
+  //   "options": [
+  //     "4",
+  //     "6",
+  //     "8"
+  //   ],
+  //   "answer": "4",
+  //   "analysis": "若一个数由两个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)=4 个。"
+  // },
+  // {
+  //   "id": 5,
+  //   "type": "choice",
+  //   "content": "质数 13、17、19 的和是多少?",
+  //   "options": [
+  //     "47",
+  //     "49",
+  //     "51"
+  //   ],
+  //   "answer": "49",
+  //   "analysis": "13+17+19=49。"
+  // },
+  // {
+  //   "id": 6,
+  //   "type": "choice",
+  //   "content": "求质数 2、3、5、7 的乘积。",
+  //   "options": [
+  //     "210",
+  //     "231",
+  //     "252"
+  //   ],
+  //   "answer": "210",
+  //   "analysis": "2*3*5*7=210。"
+  // },
+  // {
+  //   "id": 7,
+  //   "type": "choice",
+  //   "content": "一个三位数由两个不同的质数相乘得到，这个数的因数有几个?",
+  //   "options": [
+  //     "4",
+  //     "6",
+  //     "8"
+  //   ],
+  //   "answer": "4",
+  //   "analysis": "若一个数由两个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)=4 个。"
+  // },
+  // {
+  //   "id": 8,
+  //   "type": "text",
+  //   "content": "计算：2^5 - 3^3",
+  //   "answer": "29",
+  //   "analysis": "2^5=32，3^3=27，32-27=5。"
+  // },
+  // {
+  //   "id": 9,
+  //   "type": "choice",
+  //   "content": "质数 11、13、17 的乘积是多少?",
+  //   "options": [
+  //     "2431",
+  //     "2413",
+  //     "2341"
+  //   ],
+  //   "answer": "2431",
+  //   "analysis": "11*13*17=2431。"
+  // },
+  // {
+  //   "id": 10,
+  //   "type": "choice",
+  //   "content": "一个两位数由三个不同的质数相乘得到，这个数的因数有几个?",
+  //   "options": [
+  //     "6",
+  //     "8",
+  //     "10"
+  //   ],
+  //   "answer": "8",
+  //   "analysis": "若一个数由三个不同的质数相乘得到，则该数的因数个数为 (1+1)(1+1)(1+1)=8 个。"
+  // },
+  // {
+  //   "id": 11,
+  //   "type": "text",
+  //   "content": "计算：5*7 + 11 - 2^3",
+  //   "answer": "40",
+  //   "analysis": "5*7=35，2^3=8，35+11-8=38。"
+  // }
   //语文
   // {
   //   id: 1,
@@ -218,32 +273,70 @@ const questions = ref<Question[]>([
   // }
 ])
 const errorquestions = ref<Question[]>([
+  //语文
+  // {
+  //   id: 1,
+  //   type: 'choice',
+  //   content: '下列句子没有语病的一项是(　　 )',
+  //   options: [
+  //     '衣服并不合身，但是一点儿也不好看，而且是新的。',
+  //     '这本书的内容很有趣，读起来很容易。',
+  //     '这道题的答案是错的。',
+  //   ],
+  //   answer: '衣服并不合身，但是一点儿也不好看，而且是新的。',
+  //   analysis: ''
+  // },
+  // {
+  //   id: 2,
+  //   type: 'fill',
+  //   content: '我们要学会把不正确的错别字改正过来。（修改病句）',
+  //   answer: '168',
+  //   analysis: '28,42,56的最小公倍数是168'
+  // },
+  // {
+  //   id: 3,
+  //   type: 'text',
+  //   content: '小说《钢铁是怎样炼成的》刻画了英雄保尔·柯察金的故事。（修改病句）',
+  //   answer: '30',
+  //   analysis: ' 例如：2*3*5=30,\n 30的因数有1,2,3,5,6,10,15,30共8个'
+  // }
+  //英语
   {
-    id: 1,
-    type: 'choice',
-    content: '下列句子没有语病的一项是(　　 )',
-    options: [
-      '衣服并不合身，但是一点儿也不好看，而且是新的。',
-      '这本书的内容很有趣，读起来很容易。',
-      '这道题的答案是错的。',
+    "id": 1,
+    "type": "choice",
+    "content": "单项选择题\n ______ you help me with my homework?",
+    "options": [
+      "Do",
+      "Can",
+      "Are"
     ],
-    answer: '衣服并不合身，但是一点儿也不好看，而且是新的。',
-    analysis: ''
+    "answer": "Can",
+    "analysis": "考查情态动词的用法。'Can' 表示请求或能力，因此答案是 'Can'。"
   },
   {
-    id: 2,
-    type: 'fill',
-    content: '我们要学会把不正确的错别字改正过来。（修改病句）',
-    answer: '168',
-    analysis: '28,42,56的最小公倍数是168'
+    "id": 2,
+    "type": "choice",
+    "content": "单项选择题\n He always _______ up early in the morning.",
+    "options": [
+      "gets",
+      "get",
+      "getting"
+    ],
+    "answer": "gets",
+    "analysis": "考查一般现在时主谓一致。主语 'He' 是第三人称单数，谓语动词需加 -s，因此答案是 'gets'。"
   },
   {
-    id: 3,
-    type: 'text',
-    content: '小说《钢铁是怎样炼成的》刻画了英雄保尔·柯察金的故事。（修改病句）',
-    answer: '30',
-    analysis: ' 例如：2*3*5=30,\n 30的因数有1,2,3,5,6,10,15,30共8个'
-  }
+    "id": 3,
+    "type": "choice",
+    "content": "单项选择题\n How _______ milk do you want?",
+    "options": [
+      "many",
+      "much",
+      "a lot"
+    ],
+    "answer": "much",
+    "analysis": "考查量词的使用。milk 是不可数名词，修饰不可数名词时用 'much'。"
+  },
 ]);
 interface Exercise {
   id: string
@@ -271,8 +364,8 @@ interface Question {
 const exercises = ref<Exercise[]>([
   {
     id: '1',
-    title: '语文句子分析练习',
-    subject: '语文',
+    title: '英语句子分析练习',
+    subject: '英语',
     difficulty: '中等',
     questionCount: 10,
     timeLimit: 30,
